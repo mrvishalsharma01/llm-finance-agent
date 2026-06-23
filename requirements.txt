@@ -1,0 +1,7 @@
+numpy
+pandas
+yfinance
+matplotlib
+google-generativeai
+newsapi-python
+scikit-learn
