@@ -2,6 +2,8 @@
 
 An intelligent agentic workflow utilizing Large Language Models (LLMs) to fetch financial news headlines, extract market sentiments, and predict next-day stock closing prices alongside automated backtesting evaluation.
 
+![Dashboard Preview](demo-image.png)
+
 ---
 
 ## 📈 Key Features
