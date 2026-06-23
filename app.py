@@ -14,8 +14,25 @@ st.markdown("This interactive application fetches historical stock data and rece
 
 # Sidebar for Configuration
 st.sidebar.header("⚙️ Configuration")
-news_api_key = st.sidebar.text_input("NewsAPI Key", type="password", help="Get a key from newsapi.org")
-genai_api_key = st.sidebar.text_input("Gemini API Key", type="password", help="Get a key from Google AI Studio")
+
+# Retrieve API keys from Streamlit secrets if they exist
+default_news_api_key = ""
+default_genai_api_key = ""
+try:
+    if "NEWS_API_KEY" in st.secrets:
+        default_news_api_key = st.secrets["NEWS_API_KEY"]
+    elif "news_api_key" in st.secrets:
+        default_news_api_key = st.secrets["news_api_key"]
+        
+    if "GENAI_API_KEY" in st.secrets:
+        default_genai_api_key = st.secrets["GENAI_API_KEY"]
+    elif "genai_api_key" in st.secrets:
+        default_genai_api_key = st.secrets["genai_api_key"]
+except Exception:
+    pass
+
+news_api_key = st.sidebar.text_input("NewsAPI Key", value=default_news_api_key, type="password", help="Get a key from newsapi.org")
+genai_api_key = st.sidebar.text_input("Gemini API Key", value=default_genai_api_key, type="password", help="Get a key from Google AI Studio")
 model_name = st.sidebar.selectbox("Model Name", ["gemini-2.5-flash", "gemini-3.5-flash", "gemini-2.5-pro"])
 stock_symbol = st.sidebar.text_input("Stock Symbol", value="RELIANCE.NS")
 days = st.sidebar.slider("Historical Days for Context", min_value=5, max_value=60, value=30)
