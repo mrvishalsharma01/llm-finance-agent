@@ -42,53 +42,52 @@ graph TD
 ### 📋 Prerequisites
 Make sure you have **Python 3.10+** installed on your system.
 
-### 🛠️ Installation
+## Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/GURPREETKAURJETHRA/LLM-based-Finance-Agent.git
-   cd LLM-based-Finance-Agent
-   ```
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/GURPREETKAURJETHRA/LLM-based-Finance-Agent.git
+    ```
+2. Navigate to the project directory:
+    ```sh
+    cd LLM-based-Finance-Agent
+    ```
+3. Install the required dependencies:
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-2. **Install the dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Configuration
 
-3. **Configure your API keys**:
-   Create a `config.json` file in the root folder of the project. This configures the agent settings and keeps your credentials private:
-   ```json
-   {
-       "news_api_key": "YOUR_NEWS_API_KEY",
-       "genai_api_key": "YOUR_GEMINI_API_KEY",
-       "model_name": "gemini-2.5-flash",
-       "stock_symbol": "RELIANCE.NS",
-       "days": 30
-   }
-   ```
-   * 🔑 **`news_api_key`**: Your API key from [newsapi.org](https://newsapi.org/).
-   * 🔑 **`genai_api_key`**: Your API key from [Google AI Studio](https://aistudio.google.com/).
-   * 🎛️ **`model_name`**: The model to use (we recommend `gemini-2.5-flash` for high speed and low latency).
-   * 🏷️ **`stock_symbol`**: Yahoo Finance ticker symbol (e.g. `RELIANCE.NS` for Reliance, `AAPL` for Apple).
-   * 📅 **`days`**: Number of historical trading days to include in the context window (default: `30`).
-
----
-
-## 🏃 Usage
-
-Run the program from your terminal:
-```bash
-python main.py
+Configure the agent by editing the `config.json` file with your API keys and desired settings:
+```json
+{
+    "news_api_key": "your_news_api_key",
+    "genai_api_key": "your_genai_api_key",
+    "model_name": "gemini-1.5-pro",
+    "stock_symbol": "2330.tw",
+    "days": 30
+}
 ```
 
-### What happens when you run it?
-1. The agent fetches target stock information and caches the meta details to bypass rate limits.
-2. It loops through the requested date range, pulling historical data and corresponding news headlines.
-3. Gemini processes the historical data table and news headlines to predict the next closing price.
-4. On completion, it prints quantitative error statistics to the console and generates a comparative line chart of **Predicted vs. Actual** prices.
+- `news_api_key`: Your API key for the news data provider (Apply [here](https://newsapi.org/)).
+- `genai_api_key`: Your API key for Google Generative AI (Apply [here](https://aistudio.google.com/app/u/1/apikey?hl=zh-tw)).
+- `model_name`: The name of the Google Generative AI model to be used.
+- `stock_symbol`: The stock symbol to analyze.
+- `days`: The number of days to consider for the analysis.
+
+## Usage
+
+1. Ensure that you have configured the config.json file as described in the [Configuration](#configuration) section.
+
+2. Run the project using the following command:
+    ```python
+    python main.py
+    ```
+
+
 
 ---
-
-## ⚖️ License
+## ©️ License 🪪 
 
 Distributed under the MIT License. See `LICENSE` for more information.
