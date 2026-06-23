@@ -45,6 +45,7 @@ class Agent():
         if verbose:
             print(inputs)
         import time
+        import re
         retry_count = 0
         while True:
             try:
@@ -52,10 +53,24 @@ class Agent():
                 return float(response.text)
             except Exception as e:
                 retry_count += 1
-                print(f"\rRetrying... {retry_count} attempts (Error: {e})", end='', flush=True)
-                time.sleep(2)
-                if retry_count >= 5:
-                    print(f"\nFailed to get prediction after 5 attempts. Last error: {e}")
+                error_msg = str(e)
+                
+                # Default exponential backoff: 2s, 4s, 8s, 16s, 32s, 64s...
+                sleep_time = 2 * (2 ** (retry_count - 1))
+                
+                # Check if Gemini tells us exactly how long to wait
+                match = re.search(r"Please retry in (\d+\.?\d*)s", error_msg, re.IGNORECASE)
+                if match:
+                    sleep_time = float(match.group(1)) + 1.5  # sleep recommended time + 1.5s buffer
+                elif "quota" in error_msg.lower() or "429" in error_msg.lower() or "resourceexhausted" in error_msg.lower():
+                    # Sleep longer for rate limit errors if we can't parse the time
+                    sleep_time = max(sleep_time, 15.0)
+                
+                print(f"\rRetrying... {retry_count} attempts (Sleeping {sleep_time:.1f}s due to error: {e})", end='', flush=True)
+                time.sleep(sleep_time)
+                
+                if retry_count >= 8:
+                    print(f"\nFailed to get prediction after {retry_count} attempts. Last error: {e}")
                     raise e
 
     def _get_stock_history_data(self, date: datetime) -> pd.DataFrame:
