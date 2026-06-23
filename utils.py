@@ -50,8 +50,23 @@ class Agent():
         while True:
             try:
                 response = self.llm.generate_content(inputs)
-                return float(response.text)
+                text = response.text.strip()
+                
+                # Use regex to find the first numeric value (including decimals and signs)
+                # Matches patterns like 2543.20, -100.5, etc.
+                match = re.search(r"[-+]?\d{1,3}(?:,\d{3})*\.\d+|[-+]?\d+\.\d+|[-+]?\d+", text)
+                if match:
+                    num_str = match.group(0).replace(',', '')
+                    return float(num_str)
+                else:
+                    raise ValueError(f"No numeric value found in Gemini's response: '{text}'")
             except Exception as e:
+                # If it's a parsing/value error, do not retry. Propagate immediately.
+                if isinstance(e, ValueError):
+                    print(f"\nParsing error: {e}")
+                    raise e
+                
+                # For connection, quota, or rate limit issues, perform retries
                 retry_count += 1
                 error_msg = str(e)
                 
@@ -63,10 +78,17 @@ class Agent():
                 if match:
                     sleep_time = float(match.group(1)) + 1.5  # sleep recommended time + 1.5s buffer
                 elif "quota" in error_msg.lower() or "429" in error_msg.lower() or "resourceexhausted" in error_msg.lower():
-                    # Sleep longer for rate limit errors if we can't parse the time
                     sleep_time = max(sleep_time, 15.0)
                 
                 print(f"\rRetrying... {retry_count} attempts (Sleeping {sleep_time:.1f}s due to error: {e})", end='', flush=True)
+                
+                # Provide visual toast feedback on Streamlit Cloud UI
+                try:
+                    import streamlit as st
+                    st.toast(f"⚠️ Rate limit hit. Waiting {sleep_time:.1f}s before retrying (Attempt {retry_count})...", icon="⏳")
+                except Exception:
+                    pass
+                
                 time.sleep(sleep_time)
                 
                 if retry_count >= 8:
